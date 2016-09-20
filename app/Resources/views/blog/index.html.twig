@@ -1,0 +1,47 @@
+{% extends 'base.html.twig' %}
+
+{% block body_id 'blog_index' %}
+
+{% block main %}
+
+    <div id="search_box" class="section well">
+        <form action="{{ path('blog_search') }}" method="post">
+            <p>What are you looking for?</p>
+            <input id="search_input" type="search" name="search" class="input-lg" style="width: 100%"/>
+        </form>
+    </div>
+    {% for post in posts %}
+        <article class="post">
+            <h2>
+                <a href="{{ path('blog_post', { slug: post.slug }) }}">
+                    {{ post.title }}
+                </a>
+            </h2>
+
+            {{ post.summary|md2html }}
+        </article>
+    {% else %}
+        <div class="well">{{ 'post.no_posts_found'|trans }}</div>
+    {% endfor %}
+
+    <div class="navigation text-center">
+        {{ pagerfanta(posts, 'twitter_bootstrap3_translated', { routeName: 'blog_index_paginated' }) }}
+    </div>
+{% endblock %}
+
+{% block sidebar %}
+    {{ parent() }}
+
+    {{ show_source_code(_self) }}
+{% endblock %}
+
+{% block javascripts %}
+{{ parent() }}
+    <script>
+        $(function(){
+            $( "#search_input" ).autocomplete({
+                source: "{{ path('blog_suggest') }}"
+            });
+        });
+    </script>
+{% endblock %}
